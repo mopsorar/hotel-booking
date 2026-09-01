@@ -6,11 +6,13 @@ ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
 
 
 class EnvironmentSettings(BaseSettings):
+    django_secret_key: str
     db_name: str
     db_user: str
     db_password: str
     db_host: str
     db_port: int
+    
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
