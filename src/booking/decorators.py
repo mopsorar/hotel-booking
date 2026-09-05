@@ -11,10 +11,10 @@ def require_json_methods(methods):
         def wrapper(request, *args, **kwargs):
             if request.method not in allowed_methods:
                 response = JsonResponse(
-                    {'error': 'Method not allowed.'},
+                    {"error": "Method not allowed."},
                     status=405,
                 )
-                response['Allow'] = ', '.join(allowed_methods)
+                response["Allow"] = ", ".join(allowed_methods)
                 return response
 
             return view_func(request, *args, **kwargs)

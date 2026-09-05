@@ -13,7 +13,7 @@ def test_create_room(client, db):
         data={
             "description": "Комната папича с голубыми обоями",
             "price": "1337.00",
-        }
+        },
     )
 
     assert response.status_code == 201
@@ -31,7 +31,7 @@ def test_create_room_rejects_invalid_price(client, db):
         data={
             "description": "Комната папича с голубыми обоями",
             "price": "invalid_price",
-        }
+        },
     )
 
     assert response.status_code == 400
@@ -310,15 +310,9 @@ def test_list_rooms_sorts_by_created_at(
         price=Decimal("300.00"),
     )
 
-    Room.objects.filter(pk=oldest_room.pk).update(
-        created_at=datetime(2026, 1, 1, tzinfo=UTC)
-    )
-    Room.objects.filter(pk=middle_room.pk).update(
-        created_at=datetime(2026, 2, 1, tzinfo=UTC)
-    )
-    Room.objects.filter(pk=newest_room.pk).update(
-        created_at=datetime(2026, 3, 1, tzinfo=UTC)
-    )
+    Room.objects.filter(pk=oldest_room.pk).update(created_at=datetime(2026, 1, 1, tzinfo=UTC))
+    Room.objects.filter(pk=middle_room.pk).update(created_at=datetime(2026, 2, 1, tzinfo=UTC))
+    Room.objects.filter(pk=newest_room.pk).update(created_at=datetime(2026, 3, 1, tzinfo=UTC))
 
     response = client.get(
         reverse("room-list"),

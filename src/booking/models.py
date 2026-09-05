@@ -11,12 +11,12 @@ class Booking(models.Model):
     room = models.ForeignKey(
         Room,
         on_delete=models.CASCADE,
-        related_name='bookings',
+        related_name="bookings",
     )
     date_start = models.DateField()
     date_end = models.DateField()
 
     class Meta:
         indexes = [
-            models.Index(fields=['room', 'date_start']),
+            models.Index(fields=["room", "date_start"]),
         ]
