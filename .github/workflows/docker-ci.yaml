@@ -1,0 +1,59 @@
+name: Docker CI
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Create environment file
+        run: cp .env.example .env
+
+      - name: Validate Compose configuration
+        run: docker compose config --quiet
+
+      - name: Build and start containers
+        run: docker compose up --build --detach
+
+      - name: Wait for Django
+        shell: bash
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://localhost:9000/rooms/list > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+
+      - name: Run Django checks
+        run: docker compose exec -T web python src/manage.py check
+
+      - name: Run Ruff
+        run: |
+          docker compose exec -T web ruff check src
+          docker compose exec -T web ruff format --check src
+
+      - name: Run tests
+        run: docker compose exec -T web pytest -q
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Stop containers
+        if: always()
+        run: docker compose down --volumes
